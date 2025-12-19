@@ -3,10 +3,22 @@ import { announcements, events, clubs } from "../../../data/mock-data.js";
 import { $ } from "../core/utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  // --- NEW: Security Check ---
+  const isLoggedIn = Storage.get('scms-logged-in', false);
+  if (!isLoggedIn) {
+      window.location.href = 'login.html';
+      return; // Stop running code
+  }
+
+  // --- NEW: Dynamic Username ---
+  const username = Storage.get('scms-username', 'Student');
+  $('h1').textContent = `Welcome, ${username}`;
+
   // 1. Last Visited
   const lastPage = Storage.get(Storage.KEYS.LAST_VISITED, "Home Page");
   $("#last-visited").textContent = `Last visited: ${lastPage}`;
 
+  // ... (Rest of your existing dashboard.js code: Saved Announcements, Events, Clubs loops) ...
   // 2. Saved Announcements
   const savedAnnIds = Storage.get(Storage.KEYS.SAVED_ANNOUNCEMENTS, []);
   const savedAnnList = announcements.filter((a) => savedAnnIds.includes(a.id));
