@@ -28,16 +28,15 @@ function loadProfile() {
     const defaultID = registeredUser ? registeredUser.id : currentUserId;
 
     // 4. Get Profile Data (Unique to this user ID)
-    // We construct a dynamic key: scms-profile-USERID
     let profile = Storage.get(`scms-profile-${currentUserId}`, null);
     
     if (!profile) {
-        // Create fresh profile if none exists for this specific ID
         profile = {
             name: defaultName,
             id: defaultID,
-            major: 'Computer Science',
-            year: 'Year 1',
+            // FORCE DEFAULTS HERE
+            major: 'Software Engineering',
+            year: 'Year 2',
             email: `${defaultName.toLowerCase().replace(/\s+/g, '.')}@student.cadt.edu.kh`,
             linkedin: '',
             github: '',
@@ -50,8 +49,13 @@ function loadProfile() {
     // 5. Populate Inputs
     if($('#inp-name')) $('#inp-name').value = profile.name;
     if($('#inp-id')) $('#inp-id').value = profile.id;
-    if($('#inp-major')) $('#inp-major').value = profile.major;
-    if($('#inp-year')) $('#inp-year').value = profile.year;
+
+    // --- FORCED FIXED VALUES ---
+    // Even if storage says something else, we overwrite it here for the prototype
+    if($('#inp-major')) $('#inp-major').value = "Software Engineering";
+    if($('#inp-year')) $('#inp-year').value = "Year 2";
+    // ---------------------------
+
     if($('#inp-email')) $('#inp-email').value = profile.email;
     if($('#inp-linkedin')) $('#inp-linkedin').value = profile.linkedin;
     if($('#inp-github')) $('#inp-github').value = profile.github;
@@ -125,8 +129,8 @@ window.saveProfile = (e) => {
     const newProfile = {
         name: $('#inp-name').value,
         id: $('#inp-id').value,
-        major: $('#inp-major').value,
-        year: $('#inp-year').value,
+        major: $('#inp-major').value, // This will grab "Software Engineering" from the readonly input
+        year: $('#inp-year').value,   // This will grab "Year 2" from the readonly input
         email: $('#inp-email').value,
         linkedin: $('#inp-linkedin').value,
         github: $('#inp-github').value,
