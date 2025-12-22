@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SCMS</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="assets/css/global.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+</head>
+<body data-page-name="Settings">
+    
+    <div id="navbar-placeholder"></div>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        <div class="flex items-center gap-2 text-sm text-text-secondary mb-6">
+            <a href="dashboard.html" class="hover:text-nav-primary">Dashboard</a>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <span class="text-text-primary font-medium">Settings</span>
+        </div>
+
+        <h1 class="text-text-primary poppins text-2xl mb-6">Settings</h1>
+        
+        <div class="space-y-6">
+            <div class="card p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="bell" class="w-5 h-5 text-nav-primary"></i>
+                    <h2 class="text-lg font-semibold text-text-primary poppins">Notifications</h2>
+                </div>
+                <div class="space-y-3">
+                    <label class="flex items-center justify-between p-3 bg-background rounded-lg cursor-pointer hover:bg-opacity-80 transition-colors">
+                        <span class="text-text-primary text-sm">Email Alerts for Announcements</span>
+                        <input type="checkbox" checked class="w-4 h-4 accent-black">
+                    </label>
+                    <label class="flex items-center justify-between p-3 bg-background rounded-lg cursor-pointer hover:bg-opacity-80 transition-colors">
+                        <span class="text-text-primary text-sm">Event Reminders (Push)</span>
+                        <input type="checkbox" class="w-4 h-4 accent-black">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card p-6 border-l-4 border-nav-primary">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="shield" class="w-5 h-5 text-nav-primary"></i>
+                    <h2 class="text-lg font-semibold text-text-primary poppins">Admin Controls</h2>
+                </div>
+                
+                <p class="text-sm text-text-secondary mb-4">Enable admin features to post announcements or manage data.</p>
+                
+                <div class="flex items-center justify-between p-3 bg-background rounded-lg mb-4">
+                    <span class="text-sm font-medium text-text-primary">Admin Mode</span>
+                    <button onclick="toggleAdminMode()" id="admin-toggle-btn" class="text-sm text-nav-primary font-bold hover:underline">
+                        Enable
+                    </button>
+                </div>
+
+                <div id="admin-panel" class="hidden mt-6 pt-6 border-t border-gray-200 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <h3 class="text-md font-bold text-text-primary mb-3">Post New Announcement</h3>
+                    
+                    <form onsubmit="postAnnouncement(event)" class="space-y-3">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="col-span-2">
+                                <input type="text" id="new-title" placeholder="Announcement Title" required 
+                                    class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-nav-primary outline-none transition-all">
+                            </div>
+                            <div class="col-span-1">
+                                <select id="new-cat" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-nav-primary outline-none">
+                                    <option value="General">General</option>
+                                    <option value="Academic">Academic</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Events">Events</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <textarea id="new-desc" placeholder="Write your announcement content here..." required 
+                                class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm h-24 resize-none focus:ring-2 focus:ring-nav-primary outline-none"></textarea>
+
+                        <button type="submit" class="btn btn-primary w-full text-sm py-2">
+                            <i data-lucide="send" class="w-4 h-4 mr-2"></i> Post Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card p-6 border border-red-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                    <h2 class="text-lg font-semibold text-red-600 poppins">Danger Zone</h2>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="resetSystem()" class="btn bg-red-50 text-red-600 hover:bg-red-100 w-full text-sm justify-between">
+                        <span>Factory Reset (Clear Data)</span>
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <div class="flex items-center gap-3">
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+            <p class="text-text-primary" id="toast-message"></p>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/app.js"></script>
+    
+    <script type="module">
+        import { Storage } from './assets/js/core/storage.js';
+        import { Toast } from './assets/js/core/components.js';
+
+        // 1. Handle Admin Mode Toggle
+        window.toggleAdminMode = () => {
+            const current = Storage.get('scms-admin-mode', false);
+            const newState = !current;
+            Storage.set('scms-admin-mode', newState);
+            updateAdminUI(newState);
+            
+            if(newState) Toast.show("Admin Mode Enabled");
+            else Toast.show("Admin Mode Disabled");
+        };
+
+        function updateAdminUI(isAdmin) {
+            const btn = document.getElementById('admin-toggle-btn');
+            const panel = document.getElementById('admin-panel');
+            
+            if(isAdmin) {
+                btn.textContent = "Disable";
+                btn.classList.add('text-red-500');
+                panel.classList.remove('hidden');
+            } else {
+                btn.textContent = "Enable";
+                btn.classList.remove('text-red-500');
+                panel.classList.add('hidden');
+            }
+        }
+
+        // Initialize UI on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isAdmin = Storage.get('scms-admin-mode', false);
+            updateAdminUI(isAdmin);
+        });
+
+        // 2. Handle Posting Announcements
+        window.postAnnouncement = (e) => {
+            e.preventDefault();
+            
+            const newPost = {
+                id: Date.now(),
+                title: document.getElementById('new-title').value,
+                category: document.getElementById('new-cat').value,
+                description: document.getElementById('new-desc').value,
+                fullContent: document.getElementById('new-desc').value, 
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            };
+
+            const customPosts = Storage.get('scms-custom-posts', []);
+            customPosts.unshift(newPost);
+            Storage.set('scms-custom-posts', customPosts);
+
+            Toast.show("Announcement Posted Successfully!");
+            e.target.reset();
+            
+            // Optional: Redirect to announcements page after 1s
+            setTimeout(() => window.location.href = "announcements.html", 1000);
+        };
+
+        // 3. Handle Reset
+        window.resetSystem = () => {
+            if(confirm("Are you sure? This will delete all saved data.")) {
+                localStorage.clear();
+                alert("System Reset Complete.");
+                window.location.href = "index.html";
+            }
+        };
+    </script>
+</body>
+</html>

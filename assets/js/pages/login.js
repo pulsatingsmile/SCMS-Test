@@ -64,7 +64,9 @@ window.handleLogin = (e) => {
     const user = users.find(u => u.id === id && u.pass === pass);
 
     if (user) {
-        // Save logged-in state
+        // --- UPDATED LOGIC ---
+        // Save ID, Name, and Login State
+        Storage.set('scms-user-id', user.id); 
         Storage.set('scms-username', user.name);
         Storage.set('scms-logged-in', true);
         

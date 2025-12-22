@@ -25,29 +25,42 @@
             Last visited: Home Page
           </p>
         </div>
+        
         <div class="grid lg:grid-cols-3 gap-6 mb-8">
-          <div class="card p-6">
-            <div class="flex items-center gap-2 mb-4">
-              <img src="./assets/img/BookMarkBlack.svg" alt="BookMark" class="w-5 h-5 text-nav-primary">
-              <h3 class="text-text-primary poppins">Saved Announcements</h3>
+          <div class="card p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <img src="./assets/img/BookMarkBlack.svg" alt="BookMark" class="w-5 h-5 text-nav-primary">
+                <h3 class="text-text-primary poppins">Saved Announcements</h3>
+              </div>
+              <a href="announcements.html" class="text-xs text-nav-primary hover:underline">Browse</a>
             </div>
-            <div class="space-y-3" id="saved-announcements-list"></div>
+            <div class="space-y-3 flex-1" id="saved-announcements-list"></div>
           </div>
-          <div class="card p-6">
-            <div class="flex items-center gap-2 mb-4">
-              <img src="./assets/img/CalendarBlack.svg" alt="Calender" class="w-5 h-5 text-text-secondary">
-              <h3 class="text-text-primary poppins">Registered Events</h3>
+
+          <div class="card p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <img src="./assets/img/CalendarBlack.svg" alt="Calender" class="w-5 h-5 text-text-secondary">
+                <h3 class="text-text-primary poppins">Registered Events</h3>
+              </div>
+              <a href="events.html" class="text-xs text-nav-primary hover:underline">Find Events</a>
             </div>
-            <div class="space-y-3" id="registered-events-list"></div>
+            <div class="space-y-3 flex-1" id="registered-events-list"></div>
           </div>
-          <div class="card p-6">
-            <div class="flex items-center gap-2 mb-4">
-              <img src="./assets/img/PersonBlack.svg" alt="Person" class="w-5 h-5 text-nav-primary">
-              <h3 class="text-text-primary poppins">Joined Clubs</h3>
+
+          <div class="card p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <img src="./assets/img/PersonBlack.svg" alt="Person" class="w-5 h-5 text-nav-primary">
+                <h3 class="text-text-primary poppins">Joined Clubs</h3>
+              </div>
+              <a href="clubs.html" class="text-xs text-nav-primary hover:underline">Join</a>
             </div>
-            <div class="space-y-3" id="joined-clubs-list"></div>
+            <div class="space-y-3 flex-1" id="joined-clubs-list"></div>
           </div>
         </div>
+
         <div class="grid md:grid-cols-2 gap-6">
           <div class="card p-6">
             <h4 class="text-text-primary mb-4 poppins">Quick Actions</h4>
@@ -72,19 +85,24 @@
               </a>
             </div>
           </div>
+
           <div class="card p-6">
             <h4 class="text-text-primary mb-4 poppins">User Settings</h4>
             <div class="space-y-2">
-              <button
-                class="w-full text-left p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors text-text-primary"
+              <a
+                href="profile.html"
+                class="block w-full text-left p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors text-text-primary flex items-center justify-between group"
               >
-                Edit Profile
-              </button>
-              <button
-                class="w-full text-left p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors text-text-primary"
+                <span>Edit Profile</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-nav-primary"></i>
+              </a>
+              <a
+                href="settings.html"
+                class="block w-full text-left p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors text-text-primary flex items-center justify-between group"
               >
-                Notification Preferences
-              </button>
+                <span>Notification Preferences</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-nav-primary"></i>
+              </a>
             </div>
           </div>
         </div>

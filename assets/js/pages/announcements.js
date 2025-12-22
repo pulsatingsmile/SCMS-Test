@@ -9,7 +9,15 @@ function render() {
     const container = $('#announcements-container');
     const searchVal = $('#announcement-search').value.toLowerCase();
 
-    const filtered = announcements.filter(item => {
+    // --- 1. NEW: Get Admin Posts from Storage ---
+    const customPosts = Storage.get('scms-custom-posts', []);
+
+    // --- 2. NEW: Combine Mock Data + Admin Posts ---
+    // We put customPosts first so they appear at the top
+    const allAnnouncements = [...customPosts, ...announcements];
+
+    // --- 3. UPDATED: Filter the combined list instead of just 'announcements' ---
+    const filtered = allAnnouncements.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(searchVal) || item.description.toLowerCase().includes(searchVal);
         const matchesCat = currentCategory === "All" || item.category === currentCategory;
         return matchesSearch && matchesCat;
@@ -43,7 +51,12 @@ function render() {
 
 // Global handlers for HTML onclicks
 window.handleSave = (id) => {
-    const item = announcements.find(a => a.id === id);
+    // Need to search in ALL data to find the item
+    const customPosts = Storage.get('scms-custom-posts', []);
+    const allAnnouncements = [...customPosts, ...announcements];
+    
+    const item = allAnnouncements.find(a => a.id == id); // use == to match string/number IDs
+
     if(Storage.addItem(Storage.KEYS.SAVED_ANNOUNCEMENTS, id)) {
         Toast.show(`Saved: ${item.title}`);
     } else {
@@ -52,20 +65,22 @@ window.handleSave = (id) => {
 };
 
 window.handleView = (id) => {
-    const item = announcements.find(a => a.id === id);
+    // Need to search in ALL data to find the item
+    const customPosts = Storage.get('scms-custom-posts', []);
+    const allAnnouncements = [...customPosts, ...announcements];
+
+    const item = allAnnouncements.find(a => a.id == id);
+
+    // FIX: Updated button onclick to use 'window.handleSave' instead of 'saveAnnouncement'
     const content = `
         <div class="space-y-4">
             <div class="flex items-center gap-2 flex-wrap">
-                <span class="badge badge-${item.category.toLowerCase()}">${
-      item.category
-    }</span>
+                <span class="badge badge-${item.category.toLowerCase()}">${item.category}</span>
                 <span class="text-text-secondary text-sm">${item.date}</span>
             </div>
             <p class="text-text-primary leading-relaxed">${item.fullContent}</p>
             <div class="pt-4 border-t border-gray-200">
-                <button onclick="saveAnnouncement(${
-                  item.id
-                }); closeModal();" class="btn btn-primary w-full">
+                <button onclick="window.handleSave(${item.id}); closeModal();" class="btn btn-primary w-full">
                     <img src="./assets/img/BookMarkWhite.svg" alt="Save" class="w-5 h-5 mr-2"></img>
                     Save Announcement
                 </button>
