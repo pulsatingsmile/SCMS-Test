@@ -4,15 +4,15 @@ import { $ } from "../core/utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- Security Check ---
-  const isLoggedIn = Storage.get('scms-logged-in', false);
+  const isLoggedIn = Storage.get("scms-logged-in", false);
   if (!isLoggedIn) {
-      window.location.href = 'login.html';
-      return; 
+    window.location.href = "login.html";
+    return;
   }
 
   // --- Dynamic Username ---
-  const username = Storage.get('scms-username', 'Student');
-  $('h1').textContent = `Welcome, ${username}`;
+  const username = Storage.get("scms-username", "Student");
+  $("h1").textContent = `Welcome, ${username}`;
 
   // 1. Last Visited
   const lastPage = Storage.get(Storage.KEYS.LAST_VISITED, "Home Page");
@@ -30,8 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
     (item) => `
         <div class="p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors cursor-pointer border border-transparent hover:border-gray-200">
             <div class="flex items-start justify-between">
-                <p class="text-text-primary font-medium text-sm line-clamp-1">${item.title}</p>
-                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${item.category}</span>
+                <p class="text-text-primary font-medium text-sm line-clamp-1">${
+                  item.title
+                }</p>
+                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${
+      item.category
+    }</span>
             </div>
             <p class="text-text-secondary text-xs mt-1">${item.date}</p>
         </div>
@@ -48,8 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
     (item) => `
         <div class="p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors cursor-pointer border border-transparent hover:border-gray-200">
             <div class="flex items-start justify-between">
-                <p class="text-text-primary font-medium text-sm line-clamp-1">${item.title}</p>
-                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${item.category}</span>
+                <p class="text-text-primary font-medium text-sm line-clamp-1">${
+                  item.title
+                }</p>
+                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${
+      item.category
+    }</span>
             </div>
             <p class="text-text-secondary text-xs mt-1 flex items-center gap-1">
                 <img src="./assets/img/CalendarBlack.svg" class="w-3 h-3 opacity-60">
@@ -69,16 +77,22 @@ document.addEventListener("DOMContentLoaded", () => {
     (item) => `
         <div class="p-3 bg-background rounded-lg hover:bg-opacity-80 transition-colors cursor-pointer border border-transparent hover:border-gray-200">
             <div class="flex items-start justify-between">
-                <p class="text-text-primary font-medium text-sm">${item.name}</p>
-                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${item.category}</span>
+                <p class="text-text-primary font-medium text-sm">${
+                  item.name
+                }</p>
+                <span class="badge badge-${item.category.toLowerCase()} text-[10px] scale-90 origin-right">${
+      item.category
+    }</span>
             </div>
-            <p class="text-text-secondary text-xs mt-1">${item.members} members</p>
+            <p class="text-text-secondary text-xs mt-1">${
+              item.members
+            } members</p>
         </div>
     `,
     "No joined clubs."
   );
-  
-  if(window.lucide) window.lucide.createIcons();
+
+  if (window.lucide) window.lucide.createIcons();
 });
 
 function renderList(elementId, items, templateFn, emptyMsg) {
@@ -91,23 +105,33 @@ function renderList(elementId, items, templateFn, emptyMsg) {
   }
 }
 
-// --- NEW FUNCTION: Auto-Add Data ---
+// --- UPDATED FUNCTION: Auto-Add Data ---
 function seedDemoData() {
-    // 1. If no Saved Announcements, add IDs 1 and 2
-    const ann = Storage.get(Storage.KEYS.SAVED_ANNOUNCEMENTS, []);
-    if (ann.length === 0) {
-        Storage.set(Storage.KEYS.SAVED_ANNOUNCEMENTS, [1, 2]);
-    }
+  // Check if we have already seeded data for this user
+  const hasSeeded = Storage.get("scms-data-seeded", false);
 
-    // 2. If no Registered Events, add IDs 1, 2, and 4
-    const ev = Storage.get(Storage.KEYS.REGISTERED_EVENTS, []);
-    if (ev.length === 0) {
-        Storage.set(Storage.KEYS.REGISTERED_EVENTS, [1, 2, 4]);
-    }
+  if (hasSeeded) {
+    return; // STOP! Don't overwrite or re-fill data if user cleared it.
+  }
 
-    // 3. If no Joined Clubs, add IDs 1 and 5
-    const cl = Storage.get(Storage.KEYS.JOINED_CLUBS, []);
-    if (cl.length === 0) {
-        Storage.set(Storage.KEYS.JOINED_CLUBS, [1, 5]);
-    }
+  // 1. If no Saved Announcements, add IDs 1 and 2
+  const ann = Storage.get(Storage.KEYS.SAVED_ANNOUNCEMENTS, []);
+  if (ann.length === 0) {
+    Storage.set(Storage.KEYS.SAVED_ANNOUNCEMENTS, [1, 2]);
+  }
+
+  // 2. If no Registered Events, add IDs 1, 2, and 4
+  const ev = Storage.get(Storage.KEYS.REGISTERED_EVENTS, []);
+  if (ev.length === 0) {
+    Storage.set(Storage.KEYS.REGISTERED_EVENTS, [1, 2, 4]);
+  }
+
+  // 3. If no Joined Clubs, add IDs 1 and 5
+  const cl = Storage.get(Storage.KEYS.JOINED_CLUBS, []);
+  if (cl.length === 0) {
+    Storage.set(Storage.KEYS.JOINED_CLUBS, [1, 5]);
+  }
+
+  // Mark as seeded so this doesn't run again
+  Storage.set("scms-data-seeded", true);
 }

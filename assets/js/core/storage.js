@@ -15,38 +15,49 @@ const USER_SPECIFIC_KEYS = [
 ];
 
 export const Storage = {
-    // Helper to get the real key (e.g., "scms-joined-clubs-B2025001")
-    _getScopedKey(key) {
-        if (USER_SPECIFIC_KEYS.includes(key)) {
-            const userId = localStorage.getItem('scms-user-id');
-            if (userId) {
-                return `${key}-${userId}`;
-            }
-        }
-        return key;
-    },
+  // Helper to get the real key (e.g., "scms-joined-clubs-B2025001")
+  _getScopedKey(key) {
+    if (USER_SPECIFIC_KEYS.includes(key)) {
+      const userId = localStorage.getItem("scms-user-id");
+      if (userId) {
+        return `${key}-${userId}`;
+      }
+    }
+    return key;
+  },
 
-    get(key, defaultValue = null) {
-        const realKey = this._getScopedKey(key);
-        const value = localStorage.getItem(realKey);
-        return value ? JSON.parse(value) : defaultValue;
-    },
-    
-    set(key, value) {
-        const realKey = this._getScopedKey(key);
-        localStorage.setItem(realKey, JSON.stringify(value));
-    },
+  get(key, defaultValue = null) {
+    const realKey = this._getScopedKey(key);
+    const value = localStorage.getItem(realKey);
+    return value ? JSON.parse(value) : defaultValue;
+  },
 
-    addItem(listKey, id) {
-        // _getScopedKey is handled automatically by this.get and this.set
-        const list = this.get(listKey, []);
-        if (!list.includes(id)) {
-            list.push(id);
-            this.set(listKey, list);
-            return true;
-        }
-        return false;
-    },
+  set(key, value) {
+    const realKey = this._getScopedKey(key);
+    localStorage.setItem(realKey, JSON.stringify(value));
+  },
 
-    KEYS
+  addItem(listKey, id) {
+    // _getScopedKey is handled automatically by this.get and this.set
+    const list = this.get(listKey, []);
+    if (!list.includes(id)) {
+      list.push(id);
+      this.set(listKey, list);
+      return true;
+    }
+    return false;
+  },
+
+  removeItem(listKey, id) {
+    const list = this.get(listKey, []);
+    const index = list.indexOf(id);
+    if (index > -1) {
+      list.splice(index, 1);
+      this.set(listKey, list);
+      return true;
+    }
+    return false;
+  },
+
+  KEYS,
 };

@@ -9,6 +9,9 @@ function render() {
   const container = $("#clubs-container");
   const searchVal = $("#club-search").value.toLowerCase();
 
+  // 1. NEW: Get the list of joined club IDs from storage
+  const joinedIds = Storage.get(Storage.KEYS.JOINED_CLUBS, []);
+
   const filtered = clubs.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(searchVal) ||
@@ -19,8 +22,16 @@ function render() {
   });
 
   container.innerHTML = filtered
-    .map(
-      (c) => `
+    .map((c) => {
+      // 2. Check if this specific club is joined
+      const isJoined = joinedIds.includes(c.id);
+
+      // 3. Dynamic Button Logic (Join vs Leave)
+      const actionBtn = isJoined
+        ? `<button onclick="window.handleJoin(${c.id})" class="btn bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 btn-sm flex-1">Leave Club</button>`
+        : `<button onclick="window.handleJoin(${c.id})" class="btn btn-primary btn-sm flex-1">Join Club</button>`;
+
+      return `
         <div class="card overflow-hidden">
             <div class="h-32 ${c.bannerClass} flex items-center justify-center">
                 <h3 class="text-white text-center px-4 poppins">${c.name}</h3>
@@ -37,32 +48,48 @@ function render() {
                 </div>
                 <p class="text-text-secondary text-sm">${c.description}</p>
                 <div class="flex gap-2 pt-2">
-                    <button onclick="window.handleJoin(${
-                      c.id
-                    })" class="btn btn-primary btn-sm flex-1">Join Club</button>
+                    ${actionBtn}
                     <button onclick="window.handleView(${
                       c.id
                     })" class="btn btn-secondary btn-sm"><img src="./assets/img/EyeBlack.svg" alt="See" class="w-5 h-5"></img></button>
                 </div>
             </div>
-        </div>`
-    )
+        </div>`;
+    })
     .join("");
 
   if (window.lucide) window.lucide.createIcons();
 }
 
+// 4. UPDATED: Handle Join/Leave Toggle
 window.handleJoin = (id) => {
   const club = clubs.find((c) => c.id === id);
-  if (Storage.addItem(Storage.KEYS.JOINED_CLUBS, id)) {
-    Toast.show(`Joined: ${club.name}`);
+  const joinedIds = Storage.get(Storage.KEYS.JOINED_CLUBS, []);
+
+  if (joinedIds.includes(id)) {
+    // Logic for LEAVING
+    Storage.removeItem(Storage.KEYS.JOINED_CLUBS, id);
+    Toast.show(`Left Club: ${club.name}`);
   } else {
-    Toast.show(`Already a member of: ${club.name}`);
+    // Logic for JOINING
+    Storage.addItem(Storage.KEYS.JOINED_CLUBS, id);
+    Toast.show(`Joined Club: ${club.name}`);
+  }
+
+  // Re-render to update button text immediately
+  render();
+
+  // If the modal is open, refresh the button inside the modal too
+  if (document.getElementById("modal").classList.contains("active")) {
+    window.handleView(id);
   }
 };
 
 window.handleView = (id) => {
   const c = clubs.find((cl) => cl.id === id);
+  const joinedIds = Storage.get(Storage.KEYS.JOINED_CLUBS, []);
+  const isJoined = joinedIds.includes(id);
+
   const avatars = Array.from(
     { length: 8 },
     (_, i) =>
@@ -70,6 +97,11 @@ window.handleView = (id) => {
         65 + i
       )}</div>`
   ).join("");
+
+  // 5. Dynamic Button for Modal
+  const actionBtn = isJoined
+    ? `<button onclick="window.handleJoin(${c.id})" class="btn bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 w-full">Leave ${c.name}</button>`
+    : `<button onclick="window.handleJoin(${c.id})" class="btn btn-primary w-full">Join ${c.name}</button>`;
 
   const content = `
         <div class="space-y-6">
@@ -102,11 +134,7 @@ window.handleView = (id) => {
                 </div>
             </div>
             <div class="pt-4 border-t border-gray-200">
-                <button onclick="window.handleJoin(${
-                  c.id
-                }); closeModal();" class="btn btn-primary w-full">Join ${
-    c.name
-  }</button>
+                ${actionBtn}
             </div>
         </div>`;
   Modal.open(c.name, content);

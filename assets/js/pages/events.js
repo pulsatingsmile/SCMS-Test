@@ -9,6 +9,9 @@ function render() {
   const container = $("#events-container");
   const searchVal = $("#event-search").value.toLowerCase();
 
+  // Get currently registered events
+  const registeredIds = Storage.get(Storage.KEYS.REGISTERED_EVENTS, []);
+
   const filtered = events.filter((e) => {
     const matchesSearch =
       e.title.toLowerCase().includes(searchVal) ||
@@ -22,6 +25,18 @@ function render() {
     .map((e) => {
       const capacityPercent = (e.registered / e.capacity) * 100;
       const isFull = e.registered >= e.capacity;
+      const isRegistered = registeredIds.includes(e.id);
+
+      // Determine Button State
+      let actionBtn;
+      if (isRegistered) {
+        actionBtn = `<button onclick="window.handleRegister(${e.id})" class="btn bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 btn-sm flex-1">Unregister</button>`;
+      } else if (isFull) {
+        actionBtn = `<button disabled class="btn btn-primary btn-sm flex-1 opacity-50 cursor-not-allowed">Full</button>`;
+      } else {
+        actionBtn = `<button onclick="window.handleRegister(${e.id})" class="btn btn-primary btn-sm flex-1">Register</button>`;
+      }
+
       return `
             <div class="card p-6">
                 <div class="space-y-4">
@@ -57,13 +72,7 @@ function render() {
                         <div class="capacity-bar"><div class="capacity-fill" style="width: ${capacityPercent}%"></div></div>
                     </div>
                     <div class="flex gap-2 pt-2">
-                        <button onclick="window.handleRegister(${
-                          e.id
-                        })" class="btn btn-primary btn-sm flex-1" ${
-        isFull ? "disabled" : ""
-      }>
-                            ${isFull ? "Full" : "Register"}
-                        </button>
+                        ${actionBtn}
                         <button onclick="window.handleView(${
                           e.id
                         })" class="btn btn-secondary btn-sm flex-1">
@@ -81,18 +90,43 @@ function render() {
 
 window.handleRegister = (id) => {
   const event = events.find((e) => e.id === id);
-  if (event.registered >= event.capacity) return;
+  const registeredIds = Storage.get(Storage.KEYS.REGISTERED_EVENTS, []);
 
-  if (Storage.addItem(Storage.KEYS.REGISTERED_EVENTS, id)) {
-    Toast.show(`Registered for: ${event.title}`);
+  if (registeredIds.includes(id)) {
+    // Unregister
+    Storage.removeItem(Storage.KEYS.REGISTERED_EVENTS, id);
+    Toast.show(`Unregistered from: ${event.title}`);
   } else {
-    Toast.show(`Already registered for: ${event.title}`);
+    // Register
+    if (event.registered >= event.capacity) return;
+    Storage.addItem(Storage.KEYS.REGISTERED_EVENTS, id);
+    Toast.show(`Registered for: ${event.title}`);
+  }
+
+  // Re-render UI to update buttons
+  render();
+
+  // If inside a modal, close it or refresh it (closing is simpler for now)
+  if (document.getElementById("modal").classList.contains("active")) {
+    window.handleView(id); // Refresh modal content
   }
 };
 
 window.handleView = (id) => {
   const e = events.find((ev) => ev.id === id);
+  const registeredIds = Storage.get(Storage.KEYS.REGISTERED_EVENTS, []);
+  const isRegistered = registeredIds.includes(e.id);
   const isFull = e.registered >= e.capacity;
+
+  let actionBtn;
+  if (isRegistered) {
+    actionBtn = `<button onclick="window.handleRegister(${e.id})" class="btn bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 w-full">Unregister</button>`;
+  } else if (isFull) {
+    actionBtn = `<button disabled class="btn btn-primary w-full opacity-50 cursor-not-allowed">Event Full</button>`;
+  } else {
+    actionBtn = `<button onclick="window.handleRegister(${e.id})" class="btn btn-primary w-full">Register Now</button>`;
+  }
+
   const content = `
         <div class="space-y-4">
             <span class="badge badge-${e.category.toLowerCase()}">${
@@ -113,13 +147,7 @@ window.handleView = (id) => {
               e.fullDescription
             }</p>
             <div class="pt-4 border-t border-gray-200">
-                <button onclick="window.handleRegister(${
-                  e.id
-                }); closeModal();" class="btn btn-primary w-full" ${
-    isFull ? "disabled" : ""
-  }>
-                    ${isFull ? "Event Full" : "Register Now"}
-                </button>
+                ${actionBtn}
             </div>
         </div>`;
   Modal.open(e.title, content);

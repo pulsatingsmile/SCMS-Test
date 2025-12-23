@@ -20,7 +20,7 @@ nav {
   color: white;
 }
 .nav-btn.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--accent-color);
   color: white;
 }
 
@@ -29,17 +29,20 @@ footer {
   background-color: var(--footer-bg);
   padding: 1.5rem 0;
   margin-top: auto;
+  border-top: 1px solid var(--border-color);
 }
 
 /* Cards */
 .card {
-  background-color: var(--secondary);
+  border: 1px solid var(--secondary);
+  border-color: var(--border-color);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 .card:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-color);
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
@@ -67,13 +70,15 @@ footer {
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background-color: #71717a;
 }
 .btn-secondary {
   background-color: #e5e7eb;
-  color: #000;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 .btn-secondary:hover {
-  background-color: #d1d5db;
+  background-color: var(--border-color);
 }
 .btn-sm {
   padding: 0.375rem 0.75rem;
@@ -83,11 +88,14 @@ footer {
 /* Filter Buttons */
 .filter-btn {
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   background-color: var(--secondary);
   color: var(--text-primary);
   border: 1px solid #e5e7eb;
   cursor: pointer;
+}
+.filter-btn:hover {
+    border-color: var(--text-secondary);
 }
 .filter-btn.active {
   background-color: var(--nav-primary);
@@ -117,7 +125,8 @@ footer {
 .modal-content {
   position: relative;
   background-color: var(--secondary);
-  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
   max-width: 42rem;
   width: 100%;
   max-height: 90vh;
@@ -127,6 +136,7 @@ footer {
   position: sticky;
   top: 0;
   background-color: var(--secondary);
+  border-bottom: 1px solid var(--border-color);
   border-bottom: 1px solid #e5e7eb;
   padding: 1.5rem;
   display: flex;
@@ -148,12 +158,15 @@ footer {
   background-color: #ecfdf5;
   border: 1px solid #a7f3d0;
   border-radius: 0.5rem;
-  padding: 1rem 3rem 1rem 1rem;
+  padding: 1rem; /* UPDATED: Adjusted padding since we use flex gap now */
   display: none;
   animation: slideIn 0.3s ease-out;
 }
 .toast.active {
-  display: block;
+  display: flex; /* UPDATED: Changed from block to flex */
+  align-items: center; /* Vertically center items */
+  justify-content: space-between; /* Space out message and close button */
+  gap: 1rem; /* Add spacing between message and button */
 }
 @keyframes slideIn {
   from {
@@ -175,26 +188,6 @@ footer {
   display: inline-block;
   color: white;
 }
-/* .badge-academic,
-.badge-workshop,
-.badge-tech {
-  background-color: var(--nav-primary);
-}
-.badge-events,
-.badge-social {
-  background-color: #808080;
-}
-.badge-emergency {
-  background-color: #ef4444;
-}
-.badge-general,
-.badge-sport,
-.badge-art {
-  background-color: #7e7e7e;
-}
-.badge-music {
-  background-color: #808080;
-} */
 
 .badge-academic,
 .badge-workshop,
@@ -207,4 +200,48 @@ footer {
 .badge-art,
 .badge-music {
   background: rgba(49, 49, 49, 0.6);
+}
+
+.card {
+    background-color: var(--secondary);
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+}
+body.dark-mode .card {
+    box-shadow: none;
+    border: 1px solid #27272a;
+}
+
+/* --- UPDATED INPUTS --- */
+input[type="text"], input[type="password"] {
+    background-color: var(--background);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+}
+body.dark-mode input[type="text"], 
+body.dark-mode input[type="password"] {
+    background-color: #000000; 
+    border-color: #27272a;
+}
+
+/* --- FILTER BUTTONS --- */
+.filter-btn {
+    background-color: var(--secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+.filter-btn:hover {
+    background-color: var(--background);
+}
+.filter-btn.active {
+    background-color: var(--nav-primary);
+    color: white;
+    border-color: var(--nav-primary);
+}
+body.dark-mode .filter-btn.active {
+    color: black;
+    border-color: white;
 }
